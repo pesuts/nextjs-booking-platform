@@ -1,14 +1,64 @@
 "use client";
 
 import InputForm from "@/components/InputForm";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
-export default function Login(){
+import "primereact/resources/themes/lara-light-indigo/theme.css"; // Tema PrimeReact
+import "primereact/resources/primereact.min.css"; // Gaya dasar PrimeReact
+import { useToast } from "@/context/ToastContext";
+import { useRouter } from "next/navigation";
+
+interface FormData {
+  email: string | null;
+  password: string | null;
+}
+
+export default function Login() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+
+  const handleEmail = (value: string) => {
+    setEmail(value);
+  };
+
+  const handlePassword = (value: string) => {
+    setPassword(value);
+  };
+
+  const showToast = useToast();
+  const router = useRouter();
+
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    const data: FormData = {
+      email,
+      password,
+    };
+    // console.log(data);
+    const res = await signIn("credentials", {
+      redirect: false,
+      callbackUrl: "/",
+      email: data.email,
+      password: data.password,
+    });
+    if (res?.ok) {
+      router.push("/");
+      showToast("success", "Success", "Login successfully!");
+    } else {
+      showToast("error", "Error", "Login failed!");
+    }
+  };
+
   return (
     <div className="min-h-screen grid grid-cols-12">
+      {/* <Toast ref={toast}  position="top-center" /> */}
       <div className="col-span-5 bg-[url('/images/login.png')] bg-cover"></div>
       <div className="col-span-7 flex items-center justify-center">
         <div className="text-center w-7/12">
@@ -21,7 +71,11 @@ export default function Login(){
           ></Image>
           <h1 className="text-ell-900 text-3xl font-bold mt-2">Log in</h1>
           <p className="mt-2 mb-4">Welcome back! Please enter your details.</p>
-          <form >
+          {/* <button onClick={showSuccess} className="bg-amber-700 px-4 py-2 text-white rounded-md hover:bg-amber-800">
+            Show Success Toast
+          </button> */}
+          {/* <p className="my-2">Password: {password}, email : {email}</p> */}
+          <form onSubmit={handleSubmit}>
             <div className="text-left py-2">
               <InputForm
                 label="Email"
@@ -29,10 +83,12 @@ export default function Login(){
                 type="email"
                 required={true}
                 inputClass="py-1.5"
+                handler={handleEmail}
               />
             </div>
             <div className="text-left py-2">
               <InputForm
+                handler={handlePassword}
                 label="Password"
                 name="password"
                 type="password"
@@ -80,9 +136,9 @@ export default function Login(){
               </Link>
             </div>
           </form>
-          <div className="text-form">&copy;ErasmusLifeHousing</div>
+          <div className="text-form select-none">&copy;ErasmusLifeHousing</div>
         </div>
       </div>
     </div>
   );
-};
+}

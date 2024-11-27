@@ -12,7 +12,10 @@ export default function InputForm({
   placeholder,
   required = false,
   requiredSymbol = false,
+  error = false,
+  errorMessage,
   name,
+  handler,
 }: {
   label?: string;
   addLabel?: string;
@@ -22,17 +25,20 @@ export default function InputForm({
   placeholder?: string;
   required?: boolean;
   requiredSymbol?: boolean;
+  error?: boolean;
+  errorMessage?: string | null;
   name: string;
+  handler: (value: string) => void;
 }) {
   const [passwordShow, setPasswordShow] = useState<boolean>(false);
 
-    useEffect(() => {
+  useEffect(() => {
     if (passwordShow) {
       setTimeout(() => {
         setPasswordShow(false);
-      }, 6000)
+      }, 6000);
     }
-  }, [passwordShow])
+  }, [passwordShow]);
 
   return (
     <>
@@ -46,7 +52,12 @@ export default function InputForm({
           required={required}
           name={name}
           id={name}
-          className={`block w-full px-4 py-2 my-2 rounded-md text-form outline outline-1 outline-form/30 bg-white focus:bg-slate-100 focus:border-2 focus:border-ell-800 ${inputClass}`}
+          onChange={(event) => {
+            handler(event.target.value);
+          }}
+          className={`block w-full px-4 py-2 my-2 rounded-md text-form outline outline-1 outline-form/30 bg-white focus:bg-slate-100 focus:border-2 focus:border-ell-800 ${inputClass} ${
+            error ? "border-2 border-1 border-red-700 bg-red-50 focus:border-red-700 focus:bg-red-50" : ""
+          }`}
           placeholder={placeholder ?? `Enter your ${name?.toLowerCase()}`}
         />
         {type === "password" && (
@@ -58,7 +69,15 @@ export default function InputForm({
           </span>
         )}
       </div>
-      {addLabel && <p className="text-slate-500 text-sm -mt-2">{addLabel}</p>}
+      {(addLabel || errorMessage) && (
+        <p
+          className={`text-sm -mt-2 ${
+            errorMessage ? "text-red-700" : "text-slate-500"
+          }`}
+        >
+          {errorMessage ?? addLabel}
+        </p>
+      )}
     </>
   );
 }

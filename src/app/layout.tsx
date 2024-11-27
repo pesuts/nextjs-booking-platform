@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ToastProvider from "@/context/ToastContext";
 
 const plusJakartaSans = localFont({
   src: "./fonts/PlusJakartaSans.ttf",
   variable: "--font-plus-jakarta-sans",
-  weight: "400"
-})
+  weight: "400",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,10 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${plusJakartaSans.variable} font-sans antialiased`}
-      >
-        {children}
+      <body className={`${plusJakartaSans.variable} font-sans antialiased`}>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
