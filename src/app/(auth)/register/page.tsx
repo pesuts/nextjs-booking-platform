@@ -1,30 +1,68 @@
 "use client";
 
 import InputForm from "@/components/InputForm";
+import { useToast } from "@/context/ToastContext";
 import isValidEmail from "@/lib/emailValidate";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
 
 const Login = () => {
-  const [email, setEmail] = useState<string | null>(null);
+  const showToast = useToast();
+  const router = useRouter();
+
+  const [email, setEmail] = useState<string | undefined>(undefined);
   const [emailError, setEmailError] = useState<boolean>(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState<string | null>(
     null
   );
-  const [name, setName] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
+  const [name, setName] = useState<string | undefined>(undefined);
+  const [password, setPassword] = useState<string | undefined>(undefined);
   const [passwordError, setPasswordError] = useState<boolean>(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState<
     string | null
   >(null);
-  const [rePassword, setRePassword] = useState<string | null>(null);
+  const [rePassword, setRePassword] = useState<string | undefined>(undefined);
   const [rePasswordError, setRePasswordError] = useState<boolean>(false);
   const [rePasswordErrorMessage, setRePasswordErrorMessage] = useState<
     string | null
   >(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = {
+      email,
+      name,
+      password,
+    };
+    const res = await fetch("http://localhost:3000/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    const resBody: {
+      error: boolean;
+      status: number;
+      message: string;
+    } = await res.json();
+    showToast(
+      resBody.error ? "error" : "success",
+      resBody.error ? "Error" : "Success",
+      resBody.message
+    );
+    if (!resBody.error) {
+      setEmail("");
+      setPassword("");
+      setRePassword("");
+      setName("");
+      router.push("/");
+    } else {
+      setEmail("");
+      return;
+    }
+  };
 
   const handleName = (value: string) => {
     setName(value);
@@ -57,40 +95,38 @@ const Login = () => {
       setPasswordErrorMessage("Must be atleast 8 characters");
       return;
     }
-    if (rePassword && rePassword.length > 8 && password !== rePassword) {
-      setRePasswordError(true);
+    if (rePassword && rePassword.length >= 8 && password !== rePassword) {
+      setPasswordError(true);
       setPasswordErrorMessage("Password Not Match");
       return;
+    }
+    if (password === rePassword) {
+      setRePasswordError(false);
+      setRePasswordErrorMessage(null);
     }
     setPasswordError(false);
     setPasswordErrorMessage(null);
   }, [password]);
 
   useEffect(() => {
+    console.log("panjang re : ", rePassword?.length);
     if (rePassword && rePassword.length < 8) {
       setRePasswordError(true);
       setRePasswordErrorMessage("Must be atleast 8 characters");
       return;
     }
-    if (rePassword && rePassword !== password) {
+    if (password && password.length >= 8 && password !== rePassword) {
       setRePasswordError(true);
       setRePasswordErrorMessage("Password Not Match");
       return;
     }
+    if (password === rePassword) {
+      setPasswordError(false);
+      setPasswordErrorMessage(null);
+    }
     setRePasswordError(false);
     setRePasswordErrorMessage(null);
   }, [rePassword]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = {
-      email,
-      name,
-      password,
-      rePassword,
-    };
-    console.log(data);
-  };
 
   return (
     <div className="min-h-screen grid grid-cols-12">
@@ -115,6 +151,7 @@ const Login = () => {
                 label="Email"
                 name="email"
                 type="email"
+                value={email}
                 required={true}
                 requiredSymbol={true}
                 inputClass="py-1.5"
@@ -128,6 +165,8 @@ const Login = () => {
                 label="Password"
                 name="password"
                 type="password"
+                value={password}
+                autoComplete="new-password"
                 placeholder="Create a password"
                 required={true}
                 requiredSymbol={true}
@@ -141,8 +180,10 @@ const Login = () => {
             <div className="text-left py-1">
               <InputForm
                 label="Repeat Password"
-                name="password"
+                name="repassword"
                 type="password"
+                value={rePassword}
+                autoComplete="new-password"
                 placeholder="Repeat password"
                 required={true}
                 requiredSymbol={true}

@@ -3,6 +3,8 @@
 // import toastConfig from "@/lib/toastConfig";
 import { Toast } from "primereact/toast";
 import { createContext, useContext, useRef } from "react";
+import "primereact/resources/themes/lara-light-indigo/theme.css"; // Tema PrimeReact
+import "primereact/resources/primereact.min.css"; // Gaya dasar PrimeReact
 
 const ToastContext = createContext<any>(undefined);
 

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ToastProvider from "@/context/ToastContext";
 
+
 const plusJakartaSans = localFont({
   src: "./fonts/PlusJakartaSans.ttf",
   variable: "--font-plus-jakarta-sans",

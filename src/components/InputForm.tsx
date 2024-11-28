@@ -15,6 +15,8 @@ export default function InputForm({
   error = false,
   errorMessage,
   name,
+  value,
+  autoComplete,
   handler,
 }: {
   label?: string;
@@ -28,6 +30,8 @@ export default function InputForm({
   error?: boolean;
   errorMessage?: string | null;
   name: string;
+  value?: string | undefined;
+  autoComplete?: string;
   handler: (value: string) => void;
 }) {
   const [passwordShow, setPasswordShow] = useState<boolean>(false);
@@ -51,12 +55,17 @@ export default function InputForm({
           type={passwordShow ? "text" : type}
           required={required}
           name={name}
+          value={value}
           id={name}
+          autoComplete={autoComplete}
+          // autoComplete="billing new-password"
           onChange={(event) => {
             handler(event.target.value);
           }}
           className={`block w-full px-4 py-2 my-2 rounded-md text-form outline outline-1 outline-form/30 bg-white focus:bg-slate-100 focus:border-2 focus:border-ell-800 ${inputClass} ${
-            error ? "border-2 border-1 border-red-700 bg-red-50 focus:border-red-700 focus:bg-red-50" : ""
+            error
+              ? "border-2 border-1 border-red-700 bg-red-50 focus:border-red-700 focus:bg-red-50"
+              : ""
           }`}
           placeholder={placeholder ?? `Enter your ${name?.toLowerCase()}`}
         />

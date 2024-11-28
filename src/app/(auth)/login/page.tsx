@@ -8,8 +8,8 @@ import { useState } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
-import "primereact/resources/themes/lara-light-indigo/theme.css"; // Tema PrimeReact
-import "primereact/resources/primereact.min.css"; // Gaya dasar PrimeReact
+// import "primereact/resources/themes/lara-light-indigo/theme.css"; // Tema PrimeReact
+// import "primereact/resources/primereact.min.css"; // Gaya dasar PrimeReact
 import { useToast } from "@/context/ToastContext";
 import { useRouter } from "next/navigation";
 
